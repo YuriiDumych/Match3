@@ -8,11 +8,11 @@ class GameOver extends Phaser.State {
 		let text = this.add.text(this.game.world.centerX, this.game.world.centerY, 'RESTART', {font: '60px Fredoka One', fill: '#ffffff'})
 		text.anchor.set(0.5, 0.5);
 		text.inputEnabled = true;
-		text.events.onInputDown.add(this.restartGame, this)
+		text.events.onInputDown.add(this.restartGame, this);
 	}
 
 	restartGame() {
-		this.game.state.start("Main");
+		this.game.state.start("Main", true, false);
 	}
 
 }

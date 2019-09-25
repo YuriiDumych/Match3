@@ -16,10 +16,14 @@ class Main extends Phaser.State {
 		this.menu = this.add.text(420, 580, 'MENU', {font: '30px Fredoka One', fill: '#ffffff'});
 		this.menu.anchor.set(0.5, 0.5);
 		this.menu.inputEnabled = true;
-		this.menu.events.onInputDown.add(() => this.game.state.start('Menu', true, false), this);
+		this.menu.events.onInputDown.add(() => {
+			this.sound.stop();
+			clearInterval(this.interval);
+			this.time.events.add(500, () => this.game.state.start("Menu", true, false), this);
+		}, this);
 
 		this.timer = 120;
-		this.timerText = this.add.text(this.game.world.centerX, 510, '2:00', {font: '30px Fredoka One', fill: '#ffffff'});
+		this.timerText = this.add.text(this.game.world.centerX, 510, '2:00', {font: '40px Fredoka One', fill: '#000000'});
 		this.timerText.anchor.set(0.5, 0.5)
 
 		let btn_sfx = this.add.button(50, 550, 'btn-sfx', this.mute, this);
@@ -54,9 +58,13 @@ class Main extends Phaser.State {
 
 		this.createDonutsField();
 
-		setInterval(() => {
+		this.interval = setInterval(() => {
 			this.timer--;
-			if(this.timer == 0) this.game.state.start("GameOver")
+			if(this.timer == 0) {
+				clearInterval(this.interval);
+				this.time.events.add(500, () => this.game.state.start("GameOver", true, false), this);
+				
+			}
 		}, 1000)	
 	}
 
@@ -106,12 +114,15 @@ class Main extends Phaser.State {
 			for(let j = 0; j < this.grid[i].length; j++){
 				let color = this.donutColors[this.rnd.integerInRange(0, this.donutColors.length - 1)]
 				let donut = this.donuts.create(i*100, j*100, color)
+				// let shadow = this.donuts.create(0, 0, `${color}-shadow`);
+				// donut.addChild(shadow)
 				donut.inputEnabled = true;
 				donut.events.onInputDown.add(this.click, this);
 				this.grid[i][j] = donut;
 				this.add.tween(donut).from({y: -1000}, 500, Phaser.Easing.Linear.In, true)
 			}
 		}
+
 		this.time.events.add(700, this.check, this);
 	}
 
@@ -137,9 +148,11 @@ class Main extends Phaser.State {
 			this.notSound = this.game.add.text(50, 520, 'X',{font: '60px Fredoka One', fill: '#ff0000'})
 			this.notSound.anchor.set(0.5, 0,5)
 			this.sound.pause();
+			this.killSound.volume = 0;
 		} else {
 			this.notSound.destroy();
 			this.sound.resume();
+			this.killSound.volume = 0.3;
 		}
 	}
 
@@ -176,6 +189,7 @@ class Main extends Phaser.State {
 				this.grid[x][y] = null;
 			 }
 			 this.killSound.play();
+
 		}
 		this.putDonutsDown();
 	}
