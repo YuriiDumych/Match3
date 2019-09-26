@@ -74,9 +74,9 @@ class Main extends Phaser.State {
 		//vertical
 		for(let i = 0; i < this.grid.length; i++){
 			for(let j = 0; j < this.grid[i].length - 2; j++){
-				let color1 = this.grid[i][j].key;
-				let color2 = this.grid[i][j+1].key;
-				let color3 = this.grid[i][j+2].key;
+				let color1 = this.grid[i][j].children[1].key;
+				let color2 = this.grid[i][j+1].children[1].key;
+				let color3 = this.grid[i][j+2].children[1].key;
 				if(color1==color2 && color1==color3){
 					matches.push([this.grid[i][j], this.grid[i][j+1], this.grid[i][j+2]]);
 				}
@@ -86,9 +86,9 @@ class Main extends Phaser.State {
 		//horizontal
 		for(let i = 0; i < this.grid.length - 2; i++){
 			for(let j = 0; j < this.grid[i].length; j++){
-				let color1 = this.grid[i][j].key;
-				let color2 = this.grid[i+1][j].key;
-				let color3 = this.grid[i+2][j].key;
+				let color1 = this.grid[i][j].children[1].key;
+				let color2 = this.grid[i+1][j].children[1].key;
+				let color3 = this.grid[i+2][j].children[1].key;
 				if(color1==color2 && color1==color3){
 					matches.push([this.grid[i][j], this.grid[i+1][j], this.grid[i+2][j]]);
 				}
@@ -113,16 +113,17 @@ class Main extends Phaser.State {
 		for(let i = 0; i < this.grid.length; i++){
 			for(let j = 0; j < this.grid[i].length; j++){
 				let color = this.donutColors[this.rnd.integerInRange(0, this.donutColors.length - 1)]
-				let donut = this.donuts.create(i*100, j*100, color)
-				// let shadow = this.donuts.create(0, 0, `${color}-shadow`);
-				// donut.addChild(shadow)
-				donut.inputEnabled = true;
-				donut.events.onInputDown.add(this.click, this);
-				this.grid[i][j] = donut;
-				this.add.tween(donut).from({y: -1000}, 500, Phaser.Easing.Linear.In, true)
+				let parent = this.donuts.create(i*100, j*100, '')
+				let shadow = this.donuts.create(0, 0, `${color}-shadow`);
+				let donut = this.add.sprite(0,0, color)
+				parent.addChild(shadow)
+				parent.addChild(donut)
+				parent.inputEnabled = true;
+				parent.events.onInputDown.add(this.click, this);
+				this.grid[i][j] = parent;
+				this.add.tween(parent).from({y: -1000}, 500, Phaser.Easing.Linear.In, true)
 			}
 		}
-
 		this.time.events.add(700, this.check, this);
 	}
 
@@ -220,11 +221,16 @@ class Main extends Phaser.State {
 						this.add.tween(this.secondsSprite).to({alpha: 1}, 500, Phaser.Easing.Linear.In, true, 200, 1, true)
 					}
 					let color = this.donutColors[this.rnd.integerInRange(0, this.donutColors.length - 1)]
-					let donut = this.donuts.create(i*100, j*100, color)
-					donut.inputEnabled = true;
-					donut.events.onInputDown.add(this.click, this);
-					this.grid[i][j] = donut;
+					let parent = this.donuts.create(i*100, j*100, '')
+					let shadow = this.donuts.create(0, 0, `${color}-shadow`);
+					let donut = this.add.sprite(0,0, color)
+					parent.addChild(shadow)
+					parent.addChild(donut)
+					parent.inputEnabled = true;
+					parent.events.onInputDown.add(this.click, this);
+					this.grid[i][j] = parent;
 					this.add.tween(donut).from({y: -1000}, 500, Phaser.Easing.Linear.In, true)
+					this.add.tween(shadow).from({y: -1000}, 500, Phaser.Easing.Linear.In, true)
 				}
 			}
 		}
