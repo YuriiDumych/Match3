@@ -62,6 +62,7 @@ class Main extends Phaser.State {
 			this.timer--;
 			if(this.timer == 0) {
 				clearInterval(this.interval);
+				this.sound.pause();
 				this.time.events.add(500, () => this.game.state.start("GameOver", true, false), this);
 				
 			}
