@@ -21,3 +21,6 @@ Run a development build...
 `npm run production`
 
 go to localhost:3000
+
+
+Firebase - https://match3-66358.firebaseapp.com
